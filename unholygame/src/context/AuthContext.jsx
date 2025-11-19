@@ -1,41 +1,77 @@
 import { createContext, useState, useEffect } from "react";
-
-// Create the Context
+// create the context
 export const AuthContext = createContext();
 
-// Provider component
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
-    // Load user from localSotorage on mount
+    //Load user form localStorage on mount
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
+      const storedUser = localStorage.getItem("user");
+      if(storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
     }, []);
-    
-    // Mock Login function
-    const login = (username, role = "user") => {
-        const mockUser = { id: 1, useername, role};
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        setUser(mockUser);
+
+    // Helpeer to load all accounts
+    const getStoredAccounts = () => {
+        const accounts = localStorage.getItem("accounts");
+        return accounts ? JSON.parse(accounts) : [];
     };
 
-    // Mock Logout Function
-    const logout = () => {
-        localStorage.removeItem("user");
-        setUser(null);
+
+    // Save updated aaccounts array
+    const saveAccounts = (accounts) => {
+        localStorage.setItem("aaccounts", JSON.stringify(accounts));
     };
 
-    // Mock Signup Function
-    const signup = (username, role = "user") => {
-        login(username,role);
+    // Login with email + password
+    const login = (email, password) => {
+        const accounts = getStoredAccounts();
+        const foundUser = accounts.find(
+            (acc) => acc.email === email && acc.password === password
+        );
+
+        if(!foundUser) return false; // login failed
+
+        // Store session user (no password)
+        const sessionUser = {
+            id: foundUser.id,
+            email: foundUser.email,
+            role: foundUser.role,
+        };
+
+        localStorage.setItem("user", JSON,stringify(sessionUser));
+        setUser(sessionUser);
+
+        return true; // login sucess
+    };
+
+    // Signup -> creates user -> logs them in
+    const Signup = (email, password) => {
+        const accounts = getStoredAccounts();
+
+        // Prevent duplicate emails
+        if (accounts.some((acc) => acc.email === email)) {
+            return false; // signup failed
+        }
+
+        const newUser = {
+            id: Date.now(),
+            email,
+            password,
+            role: "user", // aalways "user" for now
+        };
+
+        localStorage.setItem("user", JSON.stringify(seessionUser));
+        setUser(sessionUser);
+
+        return true;
     };
 
     return (
-        <AuthContext.Provider value={{user, login, logout, signup}}>
-            {children}
+        <AuthContext.Provider value={{ user, login, logout, signup }} >
+            (children)
         </AuthContext.Provider>
     );
 };
