@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
       }
     }, []);
 
-    // Helpeer to load all accounts
+    // Helper to load all accounts
     const getStoredAccounts = () => {
         const accounts = localStorage.getItem("accounts");
         return accounts ? JSON.parse(accounts) : [];
