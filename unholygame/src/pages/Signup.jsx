@@ -1,49 +1,64 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import "../styles/auth.css";
 
 function Signup() {
-    const navigate = useNavigate();
-    const { signup } = useContext(AuthContext);
+  const { signup } = useContext(AuthContext);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [Error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        setError("");
+  const navigate = useNavigate();
 
-        const result = signup(email, password);
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-        if (result.sucess) {
-            navigaate("/dashboard");
-        } else {
-            setError(result.message || "Signup failed");
-        }
+    const result = signup(email, password);
+
+    if (!result.success) {
+      setError(result.message);
+      return;
     }
 
-    return (
-        <div className="signup-container">
-            <h2>Create an Account</h2>
-            
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Password</label>
-                    <input
-                     type="password"
-                     value={password}
-                     onChange={(e) => setPassword(e.taarget.value)}
-                     required
-                     />
-                </div>
+    // Auto-login redirect
+    navigate("/dashboard");
+  };
 
-                {error && <p className="error">{error}</p>}
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Create Account</h1>
 
-                <button type="submit">Sign Up</button>
-            </form>
-        </div>
-    );
+        {error && <p className="auth-error">{error}</p>}
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit">Sign Up</button>
+        </form>
+
+        <p className="auth-link">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default Signup;

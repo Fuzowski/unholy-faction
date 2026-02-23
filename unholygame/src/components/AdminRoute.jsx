@@ -1,19 +1,22 @@
 import { useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 function AdminRoute({ children }) {
-    const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const location = useLocation();
 
-    if (!user) {
-        return <Navigate to="/login" replace />;
-    }
+  if (!user) {
+    // Not logged in → go to login, preserve intended destination
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
-    if (user.role !== "admin") {
-        return <Navigate to="/dashboard" replace />;
-    }
+  if (user.role !== "admin") {
+    // Logged in but not admin → send to dashboard
+    return <Navigate to="/dashboard" replace />;
+  }
 
-    return children;
+  return children;
 }
 
 export default AdminRoute;
